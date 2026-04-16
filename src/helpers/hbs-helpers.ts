@@ -12,11 +12,11 @@ export function registerHelpers(): void {
     })
   })
 
-  Handlebars.registerHelper('intentStars', function (intent: number): string {
+  Handlebars.registerHelper('intentStars', function (intent: number): Handlebars.SafeString {
     const score = Math.max(1, Math.min(5, Math.round(intent)))
     const filled = '★'.repeat(score)
     const empty = '☆'.repeat(5 - score)
-    return `<span class="stars">${filled}${empty}</span>`
+    return new Handlebars.SafeString(`<span class="stars">${filled}${empty}</span>`)
   })
 
   Handlebars.registerHelper('sentimentLabel', function (sentiment: string): string {
