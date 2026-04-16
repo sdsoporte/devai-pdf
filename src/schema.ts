@@ -10,6 +10,7 @@ export const simulationReportSchema = z.object({
   }),
   simulation: z.object({
     id: z.number(),
+    number: z.number().optional(),
     model: z.string(),
     provider: z.string(),
     agentCount: z.number(),
