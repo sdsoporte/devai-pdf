@@ -1,0 +1,76 @@
+<div class="page">
+  <h2>Hallazgos</h2>
+
+  <div class="chart-container">
+    <div class="chart-title">Distribución de intención de compra</div>
+    <svg viewBox="0 0 400 160" width="100%" height="160">
+      {{#each charts.intentHistogram}}
+        <rect
+          x="{{multiply @index 80}}"
+          y="{{subtract 150 (multiply pct 1.2)}}"
+          width="60"
+          height="{{multiply pct 1.2}}"
+          fill="#3b82f6"
+          rx="4"
+        />
+        <text
+          x="{{add (multiply @index 80) 30}}"
+          y="{{subtract 145 (multiply pct 1.2)}}"
+          text-anchor="middle"
+          font-size="10"
+          fill="#1f2937"
+        >{{pct}}%</text>
+        <text
+          x="{{add (multiply @index 80) 30}}"
+          y="155"
+          text-anchor="middle"
+          font-size="10"
+          fill="#6b7280"
+        >{{score}}</text>
+      {{/each}}
+    </svg>
+  </div>
+
+  <div style="display: flex; gap: 1.5rem;">
+    <div class="chart-container" style="flex: 1;">
+      <div class="chart-title">Recomendación</div>
+      <svg viewBox="0 0 160 160" width="160" height="160">
+        {{#with charts.recommendation}}
+          {{setVar "total" (add yes (add maybe no))}}
+          {{setVar "offset" 0}}
+          {{#each (array (obj "label" "Sí" "value" yes "color" "#10b981") (obj "label" "Tal vez" "value" maybe "color" "#f59e0b") (obj "label" "No" "value" no "color" "#ef4444"))}}
+            {{setVar "slice" (divide (multiply value 360) total)}}
+            {{setVar "startX" (add 80 (multiply 60 (cosine (multiply offset -1))))}}
+            {{setVar "startY" (subtract 80 (multiply 60 (sine (multiply offset -1))))}}
+            {{setVar "endX" (add 80 (multiply 60 (cosine (multiply (add offset slice) -1))))}}
+            {{setVar "endY" (subtract 80 (multiply 60 (sine (multiply (add offset slice) -1))))}}
+            {{setVar "largeArc" (ifThen (greaterThan slice 180) 1 0)}}
+            <path
+              d="M 80 80 L {{startX}} {{startY}} A 60 60 0 {{largeArc}} 1 {{endX}} {{endY}} Z"
+              fill="{{color}}"
+              stroke="#fff"
+              stroke-width="2"
+            />
+            {{setVar "offset" (add offset slice)}}
+          {{/each}}
+          <circle cx="80" cy="80" r="36" fill="#fff" />
+          <text x="80" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#111827">{{total}}</text>
+          <text x="80" y="92" text-anchor="middle" font-size="8" fill="#6b7280">respuestas</text>
+        {{/with}}
+      </svg>
+      <div style="display: flex; gap: 0.75rem; font-size: 8pt; margin-top: 0.5rem;">
+        <div><span style="display:inline-block;width:8px;height:8px;background:#10b981;border-radius:50%;"></span> Sí {{charts.recommendation.yes}}</div>
+        <div><span style="display:inline-block;width:8px;height:8px;background:#f59e0b;border-radius:50%;"></span> Tal vez {{charts.recommendation.maybe}}</div>
+        <div><span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;"></span> No {{charts.recommendation.no}}</div>
+      </div>
+    </div>
+
+    <div class="chart-container" style="flex: 1;">
+      <div class="chart-title">Precio justo</div>
+      <div style="background:#f3f4f6;border-radius:0.5rem;padding:1.5rem;text-align:center;">
+        <div style="font-size:28pt;font-weight:700;color:#111827;">${{insights.priceConsensus}}</div>
+        <div style="font-size:9pt;color:#6b7280;margin-top:0.25rem;">Consenso de precio</div>
+      </div>
+    </div>
+  </div>
+</div>

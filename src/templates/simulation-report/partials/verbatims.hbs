@@ -1,0 +1,16 @@
+<div class="page">
+  <h2>Verbatims</h2>
+
+  {{#each verbatims}}
+    <div class="verbatim">
+      <div class="verbatim-header">
+        <div class="verbatim-author">{{name}}, {{age}} años · {{country}} · {{segment}}</div>
+        <div class="verbatim-meta">
+          <span class="sentiment-{{sentiment}}">{{sentimentLabel sentiment}}</span>
+          <span style="margin-left: 0.5rem;">{{intentStars intent}}</span>
+        </div>
+      </div>
+      <div class="verbatim-text">“{{truncate text 280}}”</div>
+    </div>
+  {{/each}}
+</div>

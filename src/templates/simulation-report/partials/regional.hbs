@@ -1,0 +1,43 @@
+<div class="page">
+  <h2>Pulso Regional</h2>
+
+  <table class="regional-table">
+    <thead>
+      <tr>
+        <th>País</th>
+        <th>Valor</th>
+        <th>Tendencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each charts.regional}}
+        <tr>
+          <td>{{flag}} {{country}}</td>
+          <td>{{value}}%</td>
+          <td>
+            {{#if (greaterThan delta 0)}}
+              <span class="delta-positive">↑ {{delta}}%</span>
+            {{else}}
+              {{#if (greaterThan 0 delta)}}
+                <span class="delta-negative">↓ {{delta}}%</span>
+              {{else}}
+                <span class="text-muted">→ 0%</span>
+              {{/if}}
+            {{/if}}
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div class="chart-container">
+    <div class="chart-title">Comparativa regional</div>
+    <svg viewBox="0 0 400 {{multiply charts.regional.length 40}}" width="100%" height="{{multiply charts.regional.length 40}}">
+      {{#each charts.regional}}
+        <rect x="60" y="{{multiply @index 40}}" width="{{multiply value 3}}" height="24" fill="#3b82f6" rx="4" />
+        <text x="0" y="{{add (multiply @index 40) 17}}" font-size="10" fill="#374151">{{flag}} {{country}}</text>
+        <text x="{{add (multiply value 3) 66}}" y="{{add (multiply @index 40) 17}}" font-size="10" fill="#1f2937">{{value}}%</text>
+      {{/each}}
+    </svg>
+  </div>
+</div>
