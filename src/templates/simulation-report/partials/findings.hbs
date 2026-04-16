@@ -1,75 +1,76 @@
 <div class="page">
+  <div class="page-header">
+    <div class="page-header-left">{{project.name}}</div>
+    <div class="page-header-right">Hallazgos Cuantitativos</div>
+  </div>
+
   <h2>Hallazgos</h2>
 
-  <div class="chart-container">
-    <div class="chart-title">Distribución de intención de compra</div>
-    <svg viewBox="0 0 400 160" width="100%" height="160">
+  <div class="chart-section">
+    <div class="chart-label">Distribución de intención de compra (1–5)</div>
+    <svg viewBox="0 0 440 140" width="100%" height="140" style="display:block;">
       {{#each charts.intentHistogram}}
+        {{! Bar fill — 1.1 scale so 100% → 110px height, leaving space for label }}
         <rect
-          x="{{multiply @index 80}}"
-          y="{{subtract 150 (multiply pct 1.2)}}"
-          width="60"
-          height="{{multiply pct 1.2}}"
-          fill="#3b82f6"
-          rx="4"
+          x="{{add (multiply @index 88) 4}}"
+          y="{{subtract 115 (multiply pct 1.05)}}"
+          width="68"
+          height="{{multiply pct 1.05}}"
+          fill="{{#if (greaterThan pct 30)}}#6366f1{{else}}#a5b4fc{{/if}}"
+          rx="5"
         />
         <text
-          x="{{add (multiply @index 80) 30}}"
-          y="{{subtract 145 (multiply pct 1.2)}}"
+          x="{{add (multiply @index 88) 38}}"
+          y="{{subtract 110 (multiply pct 1.05)}}"
           text-anchor="middle"
           font-size="10"
-          fill="#1f2937"
+          font-weight="700"
+          fill="#1e293b"
         >{{pct}}%</text>
         <text
-          x="{{add (multiply @index 80) 30}}"
-          y="155"
+          x="{{add (multiply @index 88) 38}}"
+          y="130"
           text-anchor="middle"
           font-size="10"
-          fill="#6b7280"
-        >{{score}}</text>
+          fill="#64748b"
+        >★ {{score}}</text>
       {{/each}}
     </svg>
   </div>
 
-  <div style="display: flex; gap: 1.5rem;">
-    <div class="chart-container" style="flex: 1;">
-      <div class="chart-title">Recomendación</div>
-      <svg viewBox="0 0 160 160" width="160" height="160">
-        {{#with charts.recommendation}}
-          {{setVar "total" (add yes (add maybe no))}}
-          {{setVar "offset" 0}}
-          {{#each (array (obj "label" "Sí" "value" yes "color" "#10b981") (obj "label" "Tal vez" "value" maybe "color" "#f59e0b") (obj "label" "No" "value" no "color" "#ef4444"))}}
-            {{setVar "slice" (divide (multiply value 360) total)}}
-            {{setVar "startX" (add 80 (multiply 60 (cosine (multiply offset -1))))}}
-            {{setVar "startY" (subtract 80 (multiply 60 (sine (multiply offset -1))))}}
-            {{setVar "endX" (add 80 (multiply 60 (cosine (multiply (add offset slice) -1))))}}
-            {{setVar "endY" (subtract 80 (multiply 60 (sine (multiply (add offset slice) -1))))}}
-            {{setVar "largeArc" (ifThen (greaterThan slice 180) 1 0)}}
-            <path
-              d="M 80 80 L {{startX}} {{startY}} A 60 60 0 {{largeArc}} 1 {{endX}} {{endY}} Z"
-              fill="{{color}}"
-              stroke="#fff"
-              stroke-width="2"
-            />
-            {{setVar "offset" (add offset slice)}}
-          {{/each}}
-          <circle cx="80" cy="80" r="36" fill="#fff" />
-          <text x="80" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#111827">{{total}}</text>
-          <text x="80" y="92" text-anchor="middle" font-size="8" fill="#6b7280">respuestas</text>
-        {{/with}}
-      </svg>
-      <div style="display: flex; gap: 0.75rem; font-size: 8pt; margin-top: 0.5rem;">
-        <div><span style="display:inline-block;width:8px;height:8px;background:#10b981;border-radius:50%;"></span> Sí {{charts.recommendation.yes}}</div>
-        <div><span style="display:inline-block;width:8px;height:8px;background:#f59e0b;border-radius:50%;"></span> Tal vez {{charts.recommendation.maybe}}</div>
-        <div><span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;"></span> No {{charts.recommendation.no}}</div>
-      </div>
+  <div class="charts-row">
+    <div class="chart-col-wide">
+      <div class="chart-label">Recomendación del producto</div>
+      {{#if charts.donutSlices}}
+        <div style="display:flex;align-items:center;gap:20px;">
+          <svg viewBox="0 0 160 160" width="160" height="160" style="flex-shrink:0;">
+            {{#each charts.donutSlices}}
+              <path d="{{pathD}}" fill="{{color}}" stroke="#fff" stroke-width="3" />
+            {{/each}}
+            <circle cx="80" cy="80" r="42" fill="#fff" />
+            <text x="80" y="75" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a">{{charts.recommendation.total}}</text>
+            <text x="80" y="92" text-anchor="middle" font-size="8" fill="#64748b">agentes</text>
+          </svg>
+          <div class="donut-legend">
+            {{#each charts.donutSlices}}
+              <div class="donut-legend-item">
+                <div class="donut-swatch" style="background:{{color}};"></div>
+                <span>{{label}}</span>
+                <span class="donut-pct">{{pct}}%</span>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      {{else}}
+        <div style="font-size:9pt;color:#94a3b8;padding:20px 0;">Sin datos de recomendación</div>
+      {{/if}}
     </div>
 
-    <div class="chart-container" style="flex: 1;">
-      <div class="chart-title">Precio justo</div>
-      <div style="background:#f3f4f6;border-radius:0.5rem;padding:1.5rem;text-align:center;">
-        <div style="font-size:28pt;font-weight:700;color:#111827;">${{insights.priceConsensus}}</div>
-        <div style="font-size:9pt;color:#6b7280;margin-top:0.25rem;">Consenso de precio</div>
+    <div class="chart-col-narrow">
+      <div class="chart-label">Precio justo estimado</div>
+      <div class="price-box">
+        <div class="price-amount"><span class="price-currency">$</span>{{insights.priceConsensus}}</div>
+        <div class="price-label">Consenso del panel</div>
       </div>
     </div>
   </div>

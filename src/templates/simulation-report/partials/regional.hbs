@@ -1,27 +1,62 @@
 <div class="page">
+  <div class="page-header">
+    <div class="page-header-left">{{project.name}}</div>
+    <div class="page-header-right">Pulso Regional</div>
+  </div>
+
   <h2>Pulso Regional</h2>
 
-  <table class="regional-table">
+  <div class="regional-bars">
+    {{#each charts.regional}}
+      <div class="regional-bar-row">
+        <span class="cc">{{country}}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{{value}}%;">
+            <span class="bar-fill-value">{{value}}</span>
+          </div>
+        </div>
+        <div class="bar-delta">
+          {{#if (greaterThan delta 0)}}
+            <span class="delta-positive">↑ {{delta}}pts</span>
+          {{else}}
+            {{#if (greaterThan 0 delta)}}
+              <span class="delta-negative">↓ {{absValue delta}}pts</span>
+            {{else}}
+              <span class="delta-neutral">→ par</span>
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  <div style="font-size:8pt;color:#94a3b8;margin-top:0.5rem;margin-bottom:1.5rem;">
+    Valor = intención de compra promedio escalada (0–100). Delta vs. promedio general del panel.
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;font-size:9pt;">
     <thead>
-      <tr>
-        <th>País</th>
-        <th>Valor</th>
-        <th>Tendencia</th>
+      <tr style="background:#f1f5f9;">
+        <th style="padding:8px 10px;text-align:left;font-size:7.5pt;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;border-radius:6px 0 0 6px;">País</th>
+        <th style="padding:8px 10px;text-align:center;font-size:7.5pt;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Índice</th>
+        <th style="padding:8px 10px;text-align:center;font-size:7.5pt;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;border-radius:0 6px 6px 0;">vs. Panel</th>
       </tr>
     </thead>
     <tbody>
       {{#each charts.regional}}
-        <tr>
-          <td>{{flag}} {{country}}</td>
-          <td>{{value}}%</td>
-          <td>
+        <tr style="border-bottom:1px solid #f1f5f9;">
+          <td style="padding:8px 10px;font-weight:600;color:#1e293b;">
+            <span class="cc" style="margin-right:6px;">{{country}}</span>
+          </td>
+          <td style="padding:8px 10px;text-align:center;font-weight:700;color:#0f172a;">{{value}}</td>
+          <td style="padding:8px 10px;text-align:center;">
             {{#if (greaterThan delta 0)}}
-              <span class="delta-positive">↑ {{delta}}%</span>
+              <span class="delta-positive">+{{delta}}</span>
             {{else}}
               {{#if (greaterThan 0 delta)}}
-                <span class="delta-negative">↓ {{delta}}%</span>
+                <span class="delta-negative">{{delta}}</span>
               {{else}}
-                <span class="text-muted">→ 0%</span>
+                <span class="delta-neutral">—</span>
               {{/if}}
             {{/if}}
           </td>
@@ -29,15 +64,4 @@
       {{/each}}
     </tbody>
   </table>
-
-  <div class="chart-container">
-    <div class="chart-title">Comparativa regional</div>
-    <svg viewBox="0 0 400 {{multiply charts.regional.length 40}}" width="100%" height="{{multiply charts.regional.length 40}}">
-      {{#each charts.regional}}
-        <rect x="60" y="{{multiply @index 40}}" width="{{multiply value 3}}" height="24" fill="#3b82f6" rx="4" />
-        <text x="0" y="{{add (multiply @index 40) 17}}" font-size="10" fill="#374151">{{flag}} {{country}}</text>
-        <text x="{{add (multiply value 3) 66}}" y="{{add (multiply @index 40) 17}}" font-size="10" fill="#1f2937">{{value}}%</text>
-      {{/each}}
-    </svg>
-  </div>
 </div>

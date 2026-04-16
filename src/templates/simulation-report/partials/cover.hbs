@@ -1,9 +1,49 @@
 <div class="page cover">
-  <div class="client">{{project.client}}</div>
-  <div class="project-name">{{project.name}}</div>
-  <div class="date">{{project.date}}</div>
-  {{#if project.confidential}}
-    <div class="badge badge-confidential">Confidencial</div>
-  {{/if}}
-  <div class="brand">Powered by devai</div>
+  <div class="cover-hero">
+    <div class="cover-logo-area">
+      <div class="cover-brand">devai</div>
+      <div class="cover-tag">Simulación de Consumidores</div>
+    </div>
+
+    <div class="cover-client">{{project.client}}</div>
+    <div class="cover-title">{{project.name}}</div>
+
+    <div class="cover-meta">
+      <div class="cover-date">{{project.date}}</div>
+      {{#if project.confidential}}
+        <div class="cover-confidential">Confidencial</div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="cover-body">
+    <div>
+      <div class="cover-brief-label">Brief del proyecto</div>
+      <div class="cover-brief">{{project.brief}}</div>
+    </div>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <div class="cover-stat-value">{{simulation.agentCount}}</div>
+        <div class="cover-stat-label">Agentes</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-value">{{insights.purchaseIntentAvg}}</div>
+        <div class="cover-stat-label">Intent / 5</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-value">{{insights.recommendRate}}%</div>
+        <div class="cover-stat-label">Recomendación</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-value">${{insights.priceConsensus}}</div>
+        <div class="cover-stat-label">Precio justo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-footer-text">Generado por devai · Simulación #{{simulation.id}}</div>
+    <div class="cover-footer-text">{{simulation.model}} · {{simulation.provider}}</div>
+  </div>
 </div>

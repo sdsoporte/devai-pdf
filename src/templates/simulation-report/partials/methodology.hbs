@@ -1,29 +1,61 @@
 <div class="page">
+  <div class="page-header">
+    <div class="page-header-left">{{project.name}}</div>
+    <div class="page-header-right">Metodología</div>
+  </div>
+
   <h2>Metodología</h2>
 
   <p>
-    Este informe fue generado mediante un proceso de simulación de mercado basado en agentes de IA,
-    donde cada agente actúa como un consumidor dentro del segmento target definido.
+    Este informe fue generado mediante simulación de mercado basada en agentes de IA. Cada agente recibe
+    un prompt híbrido con preguntas deliberativas en primera persona y un bloque de métricas estructuradas,
+    permitiendo obtener insights cualitativos ricos y datos cuantificables en la misma corrida.
   </p>
 
-  <ul class="methodology-list">
-    <li><strong>Modelo:</strong> {{simulation.model}} ({{simulation.provider}})</li>
-    <li><strong>Agentes simulados:</strong> {{simulation.agentCount}}</li>
-    <li><strong>Rounds de interacción:</strong> {{simulation.rounds}}</li>
-    <li><strong>Costo estimado:</strong> ${{simulation.costUsd}} USD</li>
-    <li><strong>Duración del procesamiento:</strong> {{simulation.durationSeconds}} segundos</li>
-  </ul>
+  <div class="methodology-block">
+    <div class="methodology-row">
+      <div class="methodology-key">Modelo LLM</div>
+      <div class="methodology-val">{{simulation.model}}</div>
+    </div>
+    <div class="methodology-row">
+      <div class="methodology-key">Proveedor</div>
+      <div class="methodology-val">{{simulation.provider}}</div>
+    </div>
+    <div class="methodology-row">
+      <div class="methodology-key">Agentes simulados</div>
+      <div class="methodology-val">{{simulation.agentCount}} consumidores sintéticos</div>
+    </div>
+    <div class="methodology-row">
+      <div class="methodology-key">Rounds de interacción</div>
+      <div class="methodology-val">{{simulation.rounds}}</div>
+    </div>
+    <div class="methodology-row">
+      <div class="methodology-key">Costo estimado</div>
+      <div class="methodology-val">${{simulation.costUsd}} USD</div>
+    </div>
+    <div class="methodology-row">
+      <div class="methodology-key">Duración del procesamiento</div>
+      <div class="methodology-val">{{simulation.durationSeconds}} segundos</div>
+    </div>
+    <div class="methodology-row">
+      <div class="methodology-key">Simulación #</div>
+      <div class="methodology-val">{{simulation.id}}</div>
+    </div>
+  </div>
 
-  <p class="text-muted" style="margin-top: 1.5rem;">
-    Los resultados presentados son una proyección basada en el comportamiento sintético de los agentes.
-    No reemplazan estudios de mercado tradicionales y deben utilizarse como insumo exploratorio
-    para la toma de decisiones.
+  <h3>Cómo se calculan los indicadores</h3>
+  <p style="font-size:9pt;color:#475569;">
+    <strong>Intención de compra</strong>: promedio de las puntuaciones individuales (escala 1–5) excluyendo
+    respuestas sin dato. <strong>Precio justo</strong>: mediana de los valores declarados en moneda local
+    del agente. <strong>Tasa de recomendación</strong>: porcentaje de agentes que respondieron "sí" a la
+    pregunta de recomendación estructurada. <strong>Índice regional</strong>: intención promedio por país
+    escalada linealmente a 0–100, con delta vs. el índice global del panel.
   </p>
 
   <div class="disclaimer">
-    <strong>Disclaimer:</strong> Los datos y opiniones expresadas en este documento son generados
-    automáticamente por modelos de lenguaje. El contenido puede contener imprecisiones y no constituye
-    asesoramiento profesional. devai no se hace responsable por decisiones comerciales tomadas
-    únicamente sobre la base de este informe.
+    <strong>Disclaimer:</strong> Los resultados son proyecciones basadas en comportamiento sintético de agentes de IA.
+    No reemplazan estudios de mercado tradicionales y deben utilizarse como insumo exploratorio para la toma
+    de decisiones. devai no se hace responsable por decisiones comerciales tomadas únicamente sobre la base
+    de este informe. El contenido puede contener imprecisiones inherentes a los modelos de lenguaje utilizados.
   </div>
 </div>

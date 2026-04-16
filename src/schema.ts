@@ -33,7 +33,7 @@ export const simulationReportSchema = z.object({
     regional: z.array(
       z.object({
         country: z.string(),
-        flag: z.string(),
+        flag: z.string().optional(),
         value: z.number(),
         delta: z.number(),
       })
@@ -42,7 +42,17 @@ export const simulationReportSchema = z.object({
       yes: z.number(),
       maybe: z.number(),
       no: z.number(),
+      total: z.number().optional(),
     }),
+    donutSlices: z.array(
+      z.object({
+        label: z.string(),
+        value: z.number(),
+        color: z.string(),
+        pathD: z.string(),
+        pct: z.number(),
+      })
+    ).optional(),
   }),
   verbatims: z.array(
     z.object({

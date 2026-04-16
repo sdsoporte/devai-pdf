@@ -1,38 +1,49 @@
 <div class="page">
-  <h2>Síntesis Ejecutiva</h2>
-  <p>{{insights.executiveSummary}}</p>
+  <div class="page-header">
+    <div class="page-header-left">{{project.name}}</div>
+    <div class="page-header-right">Síntesis Ejecutiva</div>
+  </div>
 
-  <div class="metrics">
-    <div class="metric">
-      <div class="value">{{insights.purchaseIntentAvg}}</div>
-      <div class="label">Intención de compra</div>
+  <h2>Síntesis Ejecutiva</h2>
+
+  <div class="exec-summary-text">
+    {{{stripMarkdown insights.executiveSummary}}}
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card intent">
+      <div class="kpi-value">{{insights.purchaseIntentAvg}}<span style="font-size:14pt;font-weight:400;color:#93c5fd;">/5</span></div>
+      <div class="kpi-label">Intención de Compra</div>
+      <div class="kpi-sub">Promedio de {{simulation.agentCount}} agentes</div>
     </div>
-    <div class="metric">
-      <div class="value">${{insights.priceConsensus}}</div>
-      <div class="label">Precio justo</div>
+    <div class="kpi-card price">
+      <div class="kpi-value"><span style="font-size:14pt;font-weight:400;color:#86efac;">$</span>{{insights.priceConsensus}}</div>
+      <div class="kpi-label">Precio Justo</div>
+      <div class="kpi-sub">Consenso del panel</div>
     </div>
-    <div class="metric">
-      <div class="value">{{insights.recommendRate}}%</div>
-      <div class="label">Recomendación</div>
+    <div class="kpi-card recommend">
+      <div class="kpi-value">{{insights.recommendRate}}<span style="font-size:14pt;font-weight:400;color:#c4b5fd;">%</span></div>
+      <div class="kpi-label">Tasa de Recomendación</div>
+      <div class="kpi-sub">Recomendaría el producto</div>
     </div>
   </div>
 
-  <div class="metrics">
-    <div class="metric">
-      <div class="value">{{simulation.agentCount}}</div>
-      <div class="label">Agentes</div>
+  <div class="sim-meta-grid">
+    <div class="sim-meta-card">
+      <div class="sim-meta-value">{{simulation.agentCount}}</div>
+      <div class="sim-meta-label">Agentes</div>
     </div>
-    <div class="metric">
-      <div class="value">{{simulation.rounds}}</div>
-      <div class="label">Rounds</div>
+    <div class="sim-meta-card">
+      <div class="sim-meta-value">{{simulation.rounds}}</div>
+      <div class="sim-meta-label">Rounds</div>
     </div>
-    <div class="metric">
-      <div class="value">${{simulation.costUsd}}</div>
-      <div class="label">Costo USD</div>
+    <div class="sim-meta-card">
+      <div class="sim-meta-value">${{simulation.costUsd}}</div>
+      <div class="sim-meta-label">Costo USD</div>
     </div>
-    <div class="metric">
-      <div class="value">{{simulation.durationSeconds}}s</div>
-      <div class="label">Duración</div>
+    <div class="sim-meta-card">
+      <div class="sim-meta-value">{{simulation.durationSeconds}}s</div>
+      <div class="sim-meta-label">Duración</div>
     </div>
   </div>
 </div>
