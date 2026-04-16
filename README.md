@@ -116,5 +116,8 @@ docker exec krill-api wget -qO- http://devai-pdf:3002/health
 ### Notas de implementación
 
 - `@sparticuz/chromium` **no se usa** — está optimizado para Lambda, no para Docker Alpine. Se usa el Chromium instalado con `apk`.
+- **Browser pool:** se mantiene una única instancia de Chromium y se reutilizan páginas con un semáforo de 5 concurrentes. No se lanza un browser por request.
+- **Handlebars partials** se registran **una sola vez al startup**, no en cada request.
+- **Rate limiting** por IP está activo en todo el servicio.
 - `intentStars` helper usa `Handlebars.SafeString` — sin esto Handlebars escapa los tags HTML con doble-stash `{{}}`.
 - Hono requiere `@hono/node-server` + `serve()` para correr en Node.js standalone (el export serverless solo no arranca el proceso).

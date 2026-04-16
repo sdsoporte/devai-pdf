@@ -6,10 +6,14 @@ import * as path from 'node:path'
 import { renderPdf } from './renderer.js'
 import { renderRequestSchema, getTemplateSchema } from './schema.js'
 import { registerHelpers } from './helpers/hbs-helpers.js'
+import { rateLimit } from './middleware/rate-limit.js'
 
 registerHelpers()
+await registerPartials()
 
 const app = new Hono()
+
+app.use('*', rateLimit())
 
 app.get('/health', (c) => {
   return c.json({ status: 'ok' })
@@ -60,23 +64,32 @@ app.post('/pdf/render', async (c) => {
   }
 })
 
-async function compileTemplate(templateName: string, data: unknown): Promise<string> {
-  const templatesDir = path.resolve(process.cwd(), 'src/templates', templateName)
-
-  // Register partials
-  const partialsDir = path.join(templatesDir, 'partials')
+async function registerPartials() {
+  const templatesDir = path.resolve(process.cwd(), 'src/templates')
   try {
-    const partialFiles = await fs.readdir(partialsDir)
-    for (const file of partialFiles) {
-      if (file.endsWith('.hbs')) {
-        const name = path.basename(file, '.hbs')
-        const content = await fs.readFile(path.join(partialsDir, file), 'utf-8')
-        Handlebars.registerPartial(name, content)
+    const templateNames = await fs.readdir(templatesDir)
+    for (const templateName of templateNames) {
+      const partialsDir = path.join(templatesDir, templateName, 'partials')
+      try {
+        const partialFiles = await fs.readdir(partialsDir)
+        for (const file of partialFiles) {
+          if (file.endsWith('.hbs')) {
+            const name = path.basename(file, '.hbs')
+            const content = await fs.readFile(path.join(partialsDir, file), 'utf-8')
+            Handlebars.registerPartial(name, content)
+          }
+        }
+      } catch {
+        // partials dir may not exist
       }
     }
   } catch {
-    // partials dir may not exist
+    // templates dir may not exist
   }
+}
+
+async function compileTemplate(templateName: string, data: unknown): Promise<string> {
+  const templatesDir = path.resolve(process.cwd(), 'src/templates', templateName)
 
   // Read styles
   let styles = ''
