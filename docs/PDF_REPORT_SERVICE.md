@@ -353,3 +353,75 @@ No hay que modificar el renderer ni el servidor. **Un solo contenedor, mantenimi
 □ Verificar PDF: portada correcta, charts visibles, verbatims legibles
 □ Verificar que devai-pdf NO está en proxy-net (no expuesto al exterior)
 ```
+
+---
+
+## 14. Implementación Real — Notas y Deviaciones
+
+### 14.1 Estado actual
+El servicio fue implementado completamente y validado localmente en Docker. Los repos están en:
+- **devai-pdf**: `https://github.com/sdsoporte/devai-pdf`
+- **krill_app** (con la integración): `https://github.com/sdsoporte/Krill-App`
+
+### 14.2 Tests agregados (extra)
+Se instaló **Vitest** y se escribieron **29 tests** en 4 archivos:
+- `src/schema.test.ts` — 10 tests de validación Zod
+- `src/helpers/hbs-helpers.test.ts` — 15 tests de helpers
+- `src/renderer.integration.test.ts` — 1 test de renderizado real con Chromium
+- `src/index.test.ts` — 3 tests de endpoints Hono (`/health`, `/pdf/render` error paths)
+
+### 14.3 Fix: `@sparticuz/chromium` → Chromium de sistema Alpine
+**Problema encontrado en validación local**: `@sparticuz/chromium` está optimizado para AWS Lambda. Cuando se usó en un contenedor Docker Alpine con Chromium instalado vía `apk`, Puppeteer arrojó `Protocol error (Target.setDiscoverTargets): Target closed`.
+
+**Fix aplicado** (`src/renderer.ts`):
+- Se eliminó la dependencia de `@sparticuz/chromium` en runtime.
+- Se usa `puppeteer-core` directamente con el binario del sistema (`/usr/bin/chromium-browser`).
+- Se pasan args explícitos para contenedores:
+  ```ts
+  const CHROMIUM_ARGS = [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+    '--disable-web-security',
+    '--disable-features=IsolateOrigins,site-per-process',
+  ]
+  ```
+
+**Resultado**: el contenedor genera PDFs válidos de 6 páginas sin errores.
+
+> Nota: `@sparticuz/chromium` sigue en `node_modules` porque fue instalado inicialmente, pero no se usa. Se puede remover de `package.json` en una limpieza futura.
+
+### 14.4 Fix: servidor Hono en Node.js
+El `src/index.ts` original exportaba `default { port, fetch: app.fetch }`, lo cual funciona para serverless (Cloudflare Workers) pero **no inicia el servidor** al correr `node dist/index.js` en un contenedor Node.js.
+
+**Fix aplicado**:
+- Se instaló `@hono/node-server`.
+- Se agregó `serve({ fetch: app.fetch, port })` cuando el archivo se ejecuta directamente.
+- Se mantiene `export default app` para que los tests sigan funcionando.
+
+### 14.5 Integración con krill_app
+Además de los archivos planificados, se modificaron:
+- `apps/api/src/index.ts` — se registró `reportsRouter`.
+- `docker/docker-compose.yml` — se agregó el servicio `devai-pdf` en `krill-network` **sin** `proxy-net`.
+
+### 14.6 Validación local realizada
+| Paso | Resultado |
+|------|-----------|
+| Build imagen Docker | ✅ Exitoso |
+| Health check `GET /health` | ✅ `{"status":"ok"}` |
+| `POST /pdf/render` con payload mínimo | ✅ PDF válido de 6 páginas |
+| Conectividad `krill-api` → `devai-pdf` | ✅ OK vía red Docker interna |
+| Endpoint `GET /api/reports/simulation/:id/pdf` | ⚠️ No testeado E2E porque `krill-api` container local es imagen vieja (requiere rebuild) |
+
+### 14.7 Consideraciones para producción (ver `DEV_VS_PROD.md`)
+- `devai-pdf` debe estar **solo en `krill-network`** — nunca en `proxy-net`.
+- El `docker-compose.yml` de prod ya usa bind mount correcto para la DB (`/data/clients/krill/Krill_db:/data`).
+- El endpoint de krill-api usa un **payload mock** por ahora. Antes de producción debe reemplazarse por queries reales a la DB.
+- Considerar hacer configurable la URL de `devai-pdf` vía variable de entorno (actualmente hardcodeada a `http://devai-pdf:3002`).
+
+### 14.8 Próximos pasos sugeridos
+1. Rebuild de `krill-api` en local para validar el flujo E2E completo.
+2. Reemplazar el payload mock en `reports.ts` por datos reales de simulación.
+3. Remover `@sparticuz/chromium` de `package.json` si no se va a usar.
+4. Agregar health check explícito en el `Dockerfile` o `docker-compose.yml` de `devai-pdf`.
