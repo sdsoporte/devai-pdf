@@ -62,18 +62,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to staging
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
-            cd /data/clients/krill/krill_app/docker
-            echo "DEVAI_PDF_TAG=sha-${{ github.sha }}" > .env.staging
-            docker compose -f docker-compose.staging.yml pull devai-pdf-staging
-            docker compose -f docker-compose.staging.yml up -d devai-pdf-staging
-            sleep 10
-            docker compose -f docker-compose.staging.yml ps
+        run: |
+          curl -s -X POST https://deploy.elautomata.com/deploy \
+            -H "Content-Type: application/json" \
+            -H "X-Deploy-Secret: ${{ secrets.DEPLOY_SECRET }}" \
+            -d '{"service":"devai-pdf","tag":"sha-${{ github.sha }}"}'
 
   deploy-production:
     needs: deploy-staging
@@ -81,16 +74,8 @@ jobs:
     environment: production
     steps:
       - name: Deploy to production
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
-          key: ${{ secrets.PROD_SSH_KEY }}
-          script: |
-            cd /data/clients/krill/krill_app/docker
-            echo "DEVAI_PDF_TAG=sha-${{ github.sha }}" >> .env
-            docker compose pull devai-pdf
-            docker compose up -d devai-pdf
-            sleep 10
-            docker compose ps
-            docker logs --tail 20 devai-pdf
+        run: |
+          curl -s -X POST https://deploy.elautomata.com/deploy \
+            -H "Content-Type: application/json" \
+            -H "X-Deploy-Secret: ${{ secrets.DEPLOY_SECRET }}" \
+            -d '{"service":"devai-pdf","tag":"sha-${{ github.sha }}"}'
