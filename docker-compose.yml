@@ -1,0 +1,29 @@
+# DevAI PDF — Standalone Docker Compose
+# Para desarrollo local o deploy independiente del servicio PDF
+# Nota: Para el ecosistema completo, usar krill_app/docker/docker-compose.yml
+
+services:
+  devai-pdf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devai-pdf
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - CHROMIUM_PATH=/usr/bin/chromium-browser
+    ports:
+      - "3002:3002"
+    networks:
+      - pdf-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  pdf-network:
+    driver: bridge
